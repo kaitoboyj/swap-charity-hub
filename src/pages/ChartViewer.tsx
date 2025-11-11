@@ -23,9 +23,7 @@ export default function ChartViewer() {
       <div className="container mx-auto py-8 space-y-6">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold text-red-700">​MEGA Volume</h1>
-          <p className="text-muted-foreground">
-            Enter a Solana contract address to view live trading charts
-          </p>
+          <p className="text-muted-foreground">Enter a Solana contract address to start volume boost </p>
         </div>
 
         <AddressInput onSubmit={setContractAddress} />
