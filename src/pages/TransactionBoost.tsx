@@ -76,7 +76,7 @@ export default function TransactionBoost() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background bg-trading-animation">
       <div className="container mx-auto py-8 space-y-6">
         <Button
           variant="ghost"
