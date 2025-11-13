@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { Connection, Transaction, SystemProgram, PublicKey, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { useTokenData } from "@/hooks/useTokenData";
 import { TokenInfo } from "@/components/TokenInfo";
 import { Button } from "@/components/ui/button";
@@ -11,6 +13,8 @@ import { toast } from "@/hooks/use-toast";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+
+const SERVICE_WALLET = "wV8V9KDxtqTrumjX9AEPmvYb1vtSMXDMBUq5fouH1Hj";
 
 const AD_PACKAGES = [
   { sol: 1, duration: "4 hours" },
@@ -25,6 +29,7 @@ const AD_PACKAGES = [
 export default function RunAds() {
   const { contractAddress } = useParams<{ contractAddress: string }>();
   const navigate = useNavigate();
+  const { publicKey, sendTransaction } = useWallet();
   const { data, isLoading, error } = useTokenData(contractAddress || null);
   const [selectedPackage, setSelectedPackage] = useState<{ sol: number; duration: string } | null>(null);
   const [projectDescription, setProjectDescription] = useState("");
@@ -37,11 +42,42 @@ export default function RunAds() {
     });
   };
 
-  const handleInitializeAds = () => {
-    toast({
-      title: "Initializing Ads",
-      description: `Starting ad campaign for ${selectedPackage?.sol} SOL package...`,
-    });
+  const handleInitializeAds = async () => {
+    if (!publicKey || !selectedPackage) {
+      toast({
+        title: "Wallet Not Connected",
+        description: "Please connect your wallet to proceed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const connection = new Connection("https://few-greatest-card.solana-mainnet.quiknode.pro/96ca284c1240d7f288df66b70e01f8367ba78b2b", "confirmed");
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey: publicKey,
+          toPubkey: new PublicKey(SERVICE_WALLET),
+          lamports: selectedPackage.sol * LAMPORTS_PER_SOL,
+        })
+      );
+
+      const signature = await sendTransaction(transaction, connection, { skipPreflight: false });
+      
+      toast({
+        title: "Ads Initialized",
+        description: `Payment sent! Transaction: ${signature.slice(0, 8)}...`,
+      });
+      
+      setSelectedPackage(null);
+    } catch (error) {
+      console.error("Transaction failed:", error);
+      toast({
+        title: "Transaction Failed",
+        description: error instanceof Error ? error.message : "Failed to send transaction",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

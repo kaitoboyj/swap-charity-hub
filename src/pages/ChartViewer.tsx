@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
 export default function ChartViewer() {
   const [contractAddress, setContractAddress] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -19,32 +20,44 @@ export default function ChartViewer() {
     isLoading,
     error
   } = useTokenData(contractAddress);
-  return <div className="min-h-screen bg-background">
+
+  return (
+    <div className="min-h-screen bg-background bg-trading-animation">
       <div className="container mx-auto py-8 space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-red-700">​MEGA Volume</h1>
-          <p className="text-muted-foreground">Enter a Solana contract address to start volume boost </p>
+        <div className="text-center space-y-4">
+          <h1 className="text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary via-accent to-primary animate-gradient">
+            VOLUME MARKET MAKER TOOL
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto">
+            Enhance your token visibility with our advanced volume generation system. Trusted by over 555+ projects to increase trading volume, create new holders, and achieve trading status.
+          </p>
         </div>
 
         <AddressInput onSubmit={setContractAddress} />
 
-        {isLoading && <div className="space-y-4">
+        {isLoading && (
+          <div className="space-y-4">
             <Skeleton className="h-[200px] w-full" />
             <Skeleton className="h-[500px] w-full" />
-          </div>}
+          </div>
+        )}
 
-        {error && <Alert variant="destructive">
+        {error && (
+          <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>Error</AlertTitle>
             <AlertDescription>
               {error instanceof Error ? error.message : "Failed to load token data"}
             </AlertDescription>
-          </Alert>}
+          </Alert>
+        )}
 
-        {data && <div className="space-y-6">
+        {data && (
+          <div className="space-y-6">
             <TokenInfo tokenInfo={data.tokenInfo} />
 
-            {data.isMigrated && data.pair ? <Tabs defaultValue="iframe" className="w-full">
+            {data.isMigrated && data.pair ? (
+              <Tabs defaultValue="iframe" className="w-full">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="iframe">DexScreener Embed</TabsTrigger>
                   <TabsTrigger value="api">DexScreener API Chart</TabsTrigger>
@@ -55,7 +68,10 @@ export default function ChartViewer() {
                 <TabsContent value="api" className="mt-6">
                   <DexScreenerAPIChart pair={data.pair} />
                 </TabsContent>
-              </Tabs> : <UnmigratedTokenMessage />}
+              </Tabs>
+            ) : (
+              <UnmigratedTokenMessage />
+            )}
 
             <Button className="w-full h-14 text-lg font-semibold" size="lg" onClick={() => setIsModalOpen(true)}>
               <TrendingUp className="mr-2 h-5 w-5" />
@@ -63,11 +79,15 @@ export default function ChartViewer() {
             </Button>
 
             <ServiceSelectionModal open={isModalOpen} onOpenChange={setIsModalOpen} contractAddress={contractAddress || ""} />
-          </div>}
+          </div>
+        )}
 
-        {!contractAddress && !isLoading && <div className="text-center py-12 text-muted-foreground">
+        {!contractAddress && !isLoading && (
+          <div className="text-center py-12 text-muted-foreground">
             Enter a Solana contract address above to get started
-          </div>}
+          </div>
+        )}
       </div>
-    </div>;
+    </div>
+  );
 }

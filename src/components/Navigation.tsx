@@ -1,4 +1,5 @@
 import { NavLink } from "./NavLink";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 export function Navigation() {
   return (
@@ -8,6 +9,9 @@ export function Navigation() {
           <div className="flex items-center gap-6">
             <NavLink to="/">Home / Chart Viewer</NavLink>
             <NavLink to="/donate">Donate</NavLink>
+          </div>
+          <div className="flex items-center">
+            <WalletMultiButton />
           </div>
         </div>
       </div>
